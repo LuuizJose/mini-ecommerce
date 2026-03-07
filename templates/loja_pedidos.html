@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Pedidos Recebidos — ShopFácil{% endblock %}
+{% block content %}
+<h1>📦 Pedidos Recebidos</h1>
+
+{% if pedidos %}
+  <table class="data-table">
+    <thead>
+      <tr><th>#</th><th>Data</th><th>Cliente</th><th>Total</th><th>Status</th><th>Atualizar</th></tr>
+    </thead>
+    <tbody>
+      {% for p in pedidos %}
+        <tr>
+          <td>#{{ p['id'] }}</td>
+          <td>{{ p['criado_em'] }}</td>
+          <td>{{ p['cliente_nome'] }}</td>
+          <td>R$ {{ '%.2f'|format(p['total']) }}</td>
+          <td><span class="status-badge status-{{ p['status'] }}">{{ p['status']|replace('_',' ')|title }}</span></td>
+          <td>
+            <form action="{{ url_for('loja_atualizar_status', pid=p['id']) }}" method="post" class="inline-form">
+              <select name="status">
+                <option value="aguardando_pagamento" {{ 'selected' if p['status']=='aguardando_pagamento' }}>Aguardando Pagamento</option>
+                <option value="pagamento_confirmado"  {{ 'selected' if p['status']=='pagamento_confirmado' }}>Pagamento Confirmado</option>
+                <option value="em_separacao"          {{ 'selected' if p['status']=='em_separacao' }}>Em Separação</option>
+                <option value="enviado"               {{ 'selected' if p['status']=='enviado' }}>Enviado</option>
+                <option value="entregue"              {{ 'selected' if p['status']=='entregue' }}>Entregue</option>
+                <option value="cancelado"             {{ 'selected' if p['status']=='cancelado' }}>Cancelado</option>
+              </select>
+              <button class="btn-sm">OK</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="empty-state">
+    <p>Nenhum pedido recebido ainda.</p>
+  </div>
+{% endif %}
+<a href="{{ url_for('loja_dashboard') }}" class="btn-outline" style="margin-top:1.5rem;display:inline-block">← Voltar ao painel</a>
+{% endblock %}

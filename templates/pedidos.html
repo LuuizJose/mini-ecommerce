@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Meus Pedidos — ShopFácil{% endblock %}
+{% block content %}
+<h1>📦 Meus Pedidos</h1>
+
+{% if pedidos %}
+  <table class="data-table">
+    <thead>
+      <tr><th>#</th><th>Data</th><th>Total</th><th>Pagamento</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for p in pedidos %}
+        <tr>
+          <td>#{{ p['id'] }}</td>
+          <td>{{ p['criado_em'] }}</td>
+          <td>R$ {{ '%.2f'|format(p['total']) }}</td>
+          <td>{{ p['pagamento']|replace('_',' ')|title }}</td>
+          <td><span class="status-badge status-{{ p['status'] }}">{{ p['status']|replace('_',' ')|title }}</span></td>
+          <td><a href="{{ url_for('pedido_detalhe', pid=p['id']) }}" class="btn-sm">Ver</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="empty-state">
+    <p>😕 Você ainda não fez nenhum pedido.</p>
+    <a href="{{ url_for('index') }}" class="btn-primary">Começar a comprar</a>
+  </div>
+{% endif %}
+{% endblock %}

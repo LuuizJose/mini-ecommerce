@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}{{ produto['nome'] }} — ShopFácil{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+  <a href="{{ url_for('index') }}">Início</a> › {{ produto['categoria'] }} › {{ produto['nome'] }}
+</div>
+
+<div class="product-detail">
+  <div class="detail-img">
+    <span class="detail-emoji">{{ ['👕','👟','🎒','🕶️','👖','🧢','📱','💻'][produto['id'] % 8] }}</span>
+  </div>
+  <div class="detail-info">
+    <span class="product-cat">{{ produto['categoria'] }}</span>
+    <h1>{{ produto['nome'] }}</h1>
+    <p class="detail-desc">{{ produto['descricao'] }}</p>
+    <p class="detail-price">R$ {{ '%.2f'|format(produto['preco']) }}</p>
+    <p class="detail-stock">
+      {% if produto['estoque'] > 5 %}
+        ✅ Em estoque ({{ produto['estoque'] }} unidades)
+      {% elif produto['estoque'] > 0 %}
+        ⚠️ Últimas {{ produto['estoque'] }} unidades!
+      {% else %}
+        ❌ Esgotado
+      {% endif %}
+    </p>
+
+    {% if produto['estoque'] > 0 %}
+      <form action="{{ url_for('add_cart', pid=produto['id']) }}" method="post" class="add-form">
+        <label>Quantidade:
+          <input type="number" name="qty" value="1" min="1" max="{{ produto['estoque'] }}">
+        </label>
+        <button class="btn-primary btn-lg">🛒 Adicionar ao Carrinho</button>
+      </form>
+    {% else %}
+      <p class="out-of-stock">Produto indisponível no momento.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

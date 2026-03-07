@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if produto else 'Novo' }} Produto — ShopFácil{% endblock %}
+{% block content %}
+<h1>{{ '✏️ Editar' if produto else '➕ Novo' }} Produto</h1>
+
+<form method="post" class="product-form">
+  <label>Nome *
+    <input type="text" name="nome" required value="{{ produto['nome'] if produto else '' }}">
+  </label>
+  <label>Descrição
+    <textarea name="descricao" rows="3">{{ produto['descricao'] if produto else '' }}</textarea>
+  </label>
+  <div class="form-row">
+    <label>Preço (R$) *
+      <input type="number" name="preco" step="0.01" min="0.01" required
+             value="{{ '%.2f'|format(produto['preco']) if produto else '' }}">
+    </label>
+    <label>Estoque *
+      <input type="number" name="estoque" min="0" required
+             value="{{ produto['estoque'] if produto else '' }}">
+    </label>
+  </div>
+  <label>Categoria
+    <input type="text" name="categoria" placeholder="Ex.: Roupas, Calçados, Eletrônicos…"
+           value="{{ produto['categoria'] if produto else '' }}">
+  </label>
+  {% if produto %}
+    <label class="checkbox-label">
+      <input type="checkbox" name="ativo" value="1" {{ 'checked' if produto['ativo'] }}>
+      Produto ativo (visível na loja)
+    </label>
+  {% endif %}
+  <div class="form-actions">
+    <button class="btn-primary">{{ 'Salvar alterações' if produto else 'Cadastrar produto' }}</button>
+    <a href="{{ url_for('loja_dashboard') }}" class="btn-outline">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Checkout — ShopFácil{% endblock %}
+{% block content %}
+<h1>✅ Finalizar Pedido</h1>
+
+<div class="checkout-layout">
+  <form method="post" class="checkout-form">
+    <div class="form-section">
+      <h3>📦 Endereço de Entrega</h3>
+      <label>Endereço completo (rua, número, bairro, cidade, CEP)
+        <textarea name="endereco" rows="3" required placeholder="Ex.: Rua das Flores, 123 — Jardim Primavera — São Paulo/SP — 01234-567"></textarea>
+      </label>
+    </div>
+
+    <div class="form-section">
+      <h3>💳 Forma de Pagamento</h3>
+      <div class="payment-options">
+        <label class="payment-opt">
+          <input type="radio" name="pagamento" value="cartao_credito" required>
+          <span>💳 Cartão de Crédito</span>
+        </label>
+        <label class="payment-opt">
+          <input type="radio" name="pagamento" value="pix">
+          <span>⚡ PIX</span>
+        </label>
+        <label class="payment-opt">
+          <input type="radio" name="pagamento" value="boleto">
+          <span>📄 Boleto Bancário</span>
+        </label>
+      </div>
+    </div>
+
+    <button class="btn-primary btn-full btn-lg">Confirmar Pedido</button>
+  </form>
+
+  <div class="checkout-summary">
+    <h3>Resumo do Pedido</h3>
+    {% for item in itens %}
+      <div class="summary-item">
+        <span>{{ item.produto['nome'] }} × {{ item.qty }}</span>
+        <span>R$ {{ '%.2f'|format(item.subtotal) }}</span>
+      </div>
+    {% endfor %}
+    <hr>
+    <div class="summary-row total-row">
+      <strong>Total</strong>
+      <strong>R$ {{ '%.2f'|format(total) }}</strong>
+    </div>
+  </div>
+</div>
+{% endblock %}
