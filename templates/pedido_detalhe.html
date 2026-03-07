@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Pedido #{{ pedido['id'] }} — ShopFácil{% endblock %}
+{% block content %}
+<h1>Pedido <span class="muted">#{{ pedido['id'] }}</span></h1>
+
+<div class="detail-grid">
+  <div class="detail-card">
+    <h3>📋 Informações</h3>
+    <p><strong>Data:</strong> {{ pedido['criado_em'] }}</p>
+    <p><strong>Pagamento:</strong> {{ pedido['pagamento']|replace('_',' ')|title }}</p>
+    <p><strong>Status:</strong>
+      <span class="status-badge status-{{ pedido['status'] }}">
+        {{ pedido['status']|replace('_',' ')|title }}
+      </span>
+    </p>
+  </div>
+  <div class="detail-card">
+    <h3>📦 Entrega</h3>
+    <p>{{ pedido['endereco'] }}</p>
+  </div>
+</div>
+
+<h3 style="margin-top:2rem">Itens do Pedido</h3>
+<table class="data-table">
+  <thead><tr><th>Produto</th><th>Categoria</th><th>Qtd.</th><th>Preço Unit.</th><th>Subtotal</th></tr></thead>
+  <tbody>
+    {% for i in itens %}
+      <tr>
+        <td>{{ i['nome'] }}</td>
+        <td>{{ i['categoria'] }}</td>
+        <td>{{ i['quantidade'] }}</td>
+        <td>R$ {{ '%.2f'|format(i['preco_unit']) }}</td>
+        <td>R$ {{ '%.2f'|format(i['quantidade'] * i['preco_unit']) }}</td>
+      </tr>
+    {% endfor %}
+    <tr class="total-row">
+      <td colspan="4"><strong>Total</strong></td>
+      <td><strong>R$ {{ '%.2f'|format(pedido['total']) }}</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<a href="{{ url_for('pedidos') }}" class="btn-outline" style="margin-top:1.5rem;display:inline-block">← Voltar para pedidos</a>
+{% endblock %}

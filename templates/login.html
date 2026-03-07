@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Entrar — ShopFácil{% endblock %}
+{% block content %}
+<div class="auth-box">
+  <h2>Entrar na sua conta</h2>
+  <form method="post">
+    <label>E-mail
+      <input type="email" name="email" required autofocus>
+    </label>
+    <label>Senha
+      <input type="password" name="senha" required>
+    </label>
+    <button class="btn-primary btn-full">Entrar</button>
+  </form>
+  <p class="auth-alt">Não tem conta? <a href="{{ url_for('cadastro') }}">Cadastre-se</a></p>
+  <div class="demo-credentials">
+    <p><strong>Contas demo:</strong></p>
+    <p>🛍️ Cliente: <code>cliente@demo.com</code> / <code>cliente123</code></p>
+    <p>🏪 Lojista: <code>loja@demo.com</code> / <code>loja123</code></p>
+  </div>
+</div>
+{% endblock %}

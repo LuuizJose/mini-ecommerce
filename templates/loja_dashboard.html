@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Painel do Lojista — ShopFácil{% endblock %}
+{% block content %}
+<div class="panel-header">
+  <h1>🏪 Painel do Lojista</h1>
+  <a href="{{ url_for('loja_produto_novo') }}" class="btn-primary">+ Novo Produto</a>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <span class="stat-num">{{ produtos|length }}</span>
+    <span class="stat-label">Produtos cadastrados</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-num">{{ produtos|selectattr('ativo','equalto',1)|list|length }}</span>
+    <span class="stat-label">Produtos ativos</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-num">{{ total_pedidos }}</span>
+    <span class="stat-label">Pedidos recebidos</span>
+  </div>
+</div>
+
+<h2>Meus Produtos</h2>
+{% if produtos %}
+  <table class="data-table">
+    <thead>
+      <tr><th>Nome</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Status</th><th>Ações</th></tr>
+    </thead>
+    <tbody>
+      {% for p in produtos %}
+        <tr>
+          <td>{{ p['nome'] }}</td>
+          <td>{{ p['categoria'] }}</td>
+          <td>R$ {{ '%.2f'|format(p['preco']) }}</td>
+          <td>{{ p['estoque'] }}</td>
+          <td>
+            {% if p['ativo'] %}
+              <span class="status-badge status-pagamento_confirmado">Ativo</span>
+            {% else %}
+              <span class="status-badge status-cancelado">Inativo</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('loja_produto_editar', pid=p['id']) }}" class="btn-sm">Editar</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="empty-state">
+    <p>Nenhum produto cadastrado ainda.</p>
+    <a href="{{ url_for('loja_produto_novo') }}" class="btn-primary">Cadastrar primeiro produto</a>
+  </div>
+{% endif %}
+
+<div style="margin-top:2rem">
+  <a href="{{ url_for('loja_pedidos') }}" class="btn-outline">📦 Ver todos os pedidos</a>
+</div>
+{% endblock %}

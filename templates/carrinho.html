@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Carrinho — ShopFácil{% endblock %}
+{% block content %}
+<h1>🛒 Meu Carrinho</h1>
+
+{% if itens %}
+  <div class="cart-layout">
+    <table class="cart-table">
+      <thead>
+        <tr><th>Produto</th><th>Preço Unit.</th><th>Qtd.</th><th>Subtotal</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for item in itens %}
+          <tr>
+            <td><a href="{{ url_for('produto', pid=item.produto['id']) }}">{{ item.produto['nome'] }}</a></td>
+            <td>R$ {{ '%.2f'|format(item.produto['preco']) }}</td>
+            <td>
+              <form action="{{ url_for('update_cart') }}" method="post" class="qty-form">
+                <input type="hidden" name="pid" value="{{ item.produto['id'] }}">
+                <input type="number" name="qty" value="{{ item.qty }}" min="1"
+                       max="{{ item.produto['estoque'] }}" onchange="this.form.submit()">
+              </form>
+            </td>
+            <td><strong>R$ {{ '%.2f'|format(item.subtotal) }}</strong></td>
+            <td>
+              <a href="{{ url_for('remove_cart', pid=item.produto['id']) }}" class="btn-remove">✕</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="cart-summary">
+      <h3>Resumo</h3>
+      <div class="summary-row"><span>Subtotal</span><span>R$ {{ '%.2f'|format(total) }}</span></div>
+      <div class="summary-row"><span>Frete</span><span class="green">Grátis acima de R$199,90</span></div>
+      <div class="summary-row total-row"><strong>Total</strong><strong>R$ {{ '%.2f'|format(total) }}</strong></div>
+      {% if session.user_id %}
+        <a href="{{ url_for('checkout') }}" class="btn-primary btn-full">Finalizar Compra</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn-primary btn-full">Entrar para finalizar</a>
+      {% endif %}
+      <a href="{{ url_for('index') }}" class="btn-outline btn-full">Continuar comprando</a>
+    </div>
+  </div>
+{% else %}
+  <div class="empty-state">
+    <p>😕 Seu carrinho está vazio.</p>
+    <a href="{{ url_for('index') }}" class="btn-primary">Ver produtos</a>
+  </div>
+{% endif %}
+{% endblock %}

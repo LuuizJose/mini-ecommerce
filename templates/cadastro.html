@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Cadastro — ShopFácil{% endblock %}
+{% block content %}
+<div class="auth-box">
+  <h2>Criar conta</h2>
+  <form method="post">
+    <label>Nome completo
+      <input type="text" name="nome" required autofocus>
+    </label>
+    <label>E-mail
+      <input type="email" name="email" required>
+    </label>
+    <label>Senha
+      <input type="password" name="senha" required minlength="6">
+    </label>
+    <label>Tipo de conta
+      <select name="tipo">
+        <option value="cliente">🛍️ Cliente</option>
+        <option value="lojista">🏪 Lojista</option>
+      </select>
+    </label>
+    <button class="btn-primary btn-full">Criar conta</button>
+  </form>
+  <p class="auth-alt">Já tem conta? <a href="{{ url_for('login') }}">Entrar</a></p>
+</div>
+{% endblock %}

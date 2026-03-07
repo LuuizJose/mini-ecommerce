@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}ShopFácil — Vitrine{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Os melhores produtos, na palma da sua mão</h1>
+  <p>Frete grátis acima de R$ 199,90 · Pagamento seguro · Entrega rápida</p>
+</section>
+
+<div class="shop-layout">
+  <!-- Sidebar categorias -->
+  <aside class="sidebar">
+    <h3>Categorias</h3>
+    <ul class="cat-list">
+      <li><a href="{{ url_for('index') }}" class="{{ 'active' if not categoria_sel }}">Todas</a></li>
+      {% for c in categorias %}
+        <li>
+          <a href="{{ url_for('index', cat=c['categoria']) }}"
+             class="{{ 'active' if categoria_sel == c['categoria'] }}">
+            {{ c['categoria'] }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <!-- Grade de produtos -->
+  <section class="products-area">
+    {% if busca %}
+      <p class="search-info">Resultados para: <strong>"{{ busca }}"</strong> — {{ produtos|length }} produto(s)</p>
+    {% endif %}
+
+    {% if produtos %}
+      <div class="product-grid">
+        {% for p in produtos %}
+          <div class="product-card">
+            <div class="product-img">
+              <span class="product-emoji">{{ ['👕','👟','🎒','🕶️','👖','🧢','📱','💻'][loop.index0 % 8] }}</span>
+            </div>
+            <div class="product-info">
+              <span class="product-cat">{{ p['categoria'] }}</span>
+              <h3><a href="{{ url_for('produto', pid=p['id']) }}">{{ p['nome'] }}</a></h3>
+              <p class="product-desc">{{ p['descricao'][:60] }}{% if p['descricao']|length > 60 %}…{% endif %}</p>
+              <div class="product-footer">
+                <span class="price">R$ {{ '%.2f'|format(p['preco']) }}</span>
+                {% if p['estoque'] > 0 %}
+                  <form action="{{ url_for('add_cart', pid=p['id']) }}" method="post">
+                    <input type="hidden" name="qty" value="1">
+                    <button class="btn-add">Adicionar</button>
+                  </form>
+                {% else %}
+                  <span class="out-of-stock">Esgotado</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p>😕 Nenhum produto encontrado.</p>
+        <a href="{{ url_for('index') }}" class="btn-primary">Ver todos</a>
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
