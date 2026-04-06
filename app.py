@@ -138,6 +138,10 @@ def init_db():
         db.commit()
     db.close()
 
+# Inicializa o banco ao subir o servidor
+with app.app_context():
+    init_db()
+
 # ─── Carrinho (sessão) ────────────────────────────────────────────────────────
 
 def get_cart():
