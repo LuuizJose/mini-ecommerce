@@ -1,3 +1,4 @@
+# Iteração 2 — branch iteracao2
 """
 E-commerce — Flask + SQLite
 Funcionalidades: cadastro/login, catálogo, carrinho, pedidos, painel do lojista

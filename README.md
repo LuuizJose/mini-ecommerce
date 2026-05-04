@@ -94,3 +94,6 @@ item_pedido   (id, pedido_id, produto_id, quantidade, preco_unit)
 - Implementar avaliações de produtos
 - Adicionar cálculo de frete via API dos Correios
 - Deploy em plataforma cloud (Railway, Render, Heroku)
+
+## Iteração 2
+Branch criado para a iteração 2 do projeto.
