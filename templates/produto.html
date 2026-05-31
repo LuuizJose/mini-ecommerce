@@ -8,7 +8,7 @@
 
 <div class="product-detail">
   <div class="detail-img">
-    <span class="detail-emoji">{{ ['👕','👟','🎒','🕶️','👖','🧢','📱','💻'][produto['id'] % 8] }}</span>
+    <span class="detail-emoji">{{ ['👕','👟','🎒','🕶️','👖','🧢','📱','💻'][(produto['id'] - 1) % 8] }}</span>
   </div>
   <div class="detail-info">
     <span class="product-cat">{{ produto['categoria'] }}</span>
@@ -34,6 +34,55 @@
       </form>
     {% else %}
       <p class="out-of-stock">Produto indisponível no momento.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="avaliacoes-section" style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #eee;">
+  <h2>Avaliações do Produto</h2>
+  
+  {% if session.user_id %}
+    <form action="{{ url_for('avaliar_produto', pid=produto['id']) }}" method="post" style="margin-bottom: 2rem; background: #f9f9f9; padding: 1rem; border-radius: 8px;">
+      <h4>Deixe sua avaliação</h4>
+      <div style="margin-bottom: 1rem;">
+        <label>Nota: 
+          <select name="nota">
+            <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+            <option value="4">⭐⭐⭐⭐ (4)</option>
+            <option value="3">⭐⭐⭐ (3)</option>
+            <option value="2">⭐⭐ (2)</option>
+            <option value="1">⭐ (1)</option>
+          </select>
+        </label>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label style="display:block; margin-bottom:0.5rem;">Comentário (opcional):</label>
+        <textarea name="comentario" rows="3" style="width:100%; max-width:500px; padding:0.5rem;"></textarea>
+      </div>
+      <button type="submit" class="btn-primary">Enviar Avaliação</button>
+    </form>
+  {% else %}
+    <p><a href="{{ url_for('login') }}">Faça login</a> para avaliar este produto.</p>
+  {% endif %}
+
+  <div class="avaliacoes-lista">
+    {% if avaliacoes %}
+      {% for aval in avaliacoes %}
+        <div class="avaliacao-item" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
+          <div style="font-weight: bold; margin-bottom: 0.2rem;">
+            {{ aval['nome'] }} 
+            <span style="color: #f39c12;">{{ '⭐' * aval['nota'] }}</span>
+          </div>
+          <div style="color: #888; font-size: 0.85rem; margin-bottom: 0.5rem;">
+            Avaliado em {{ aval['criado_em'] }}
+          </div>
+          {% if aval['comentario'] %}
+            <p style="margin:0;">{{ aval['comentario'] }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>Este produto ainda não possui avaliações. Seja o primeiro a avaliar!</p>
     {% endif %}
   </div>
 </div>

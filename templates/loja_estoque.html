@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Gerenciar Estoque — ShopFácil{% endblock %}
+{% block content %}
+<div class="panel-header">
+  <h1>📋 Gerenciar Estoque</h1>
+  <a href="{{ url_for('loja_dashboard') }}" class="btn-outline">Voltar ao Painel</a>
+</div>
+
+{% if produtos %}
+  <form method="post" action="{{ url_for('loja_estoque') }}">
+    <table class="data-table">
+      <thead>
+        <tr><th>ID</th><th>Nome</th><th>Estoque Atual</th></tr>
+      </thead>
+      <tbody>
+        {% for p in produtos %}
+          <tr>
+            <td>{{ p['id'] }}</td>
+            <td>{{ p['nome'] }}</td>
+            <td>
+              <input type="number" name="estoque_{{ p['id'] }}" value="{{ p['estoque'] }}" min="0" style="width: 100px;">
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="margin-top: 1rem; text-align: right;">
+        <button type="submit" class="btn-primary btn-lg">Salvar Estoque</button>
+    </div>
+  </form>
+{% else %}
+  <div class="empty-state">
+    <p>Nenhum produto cadastrado.</p>
+  </div>
+{% endif %}
+{% endblock %}

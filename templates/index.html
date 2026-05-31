@@ -35,7 +35,7 @@
         {% for p in produtos %}
           <div class="product-card">
             <div class="product-img">
-              <span class="product-emoji">{{ ['👕','👟','🎒','🕶️','👖','🧢','📱','💻'][loop.index0 % 8] }}</span>
+              <span class="product-emoji">{{ ['👕','👟','🎒','🕶️','👖','🧢','📱','💻'][(p['id'] - 1) % 8] }}</span>
             </div>
             <div class="product-info">
               <span class="product-cat">{{ p['categoria'] }}</span>

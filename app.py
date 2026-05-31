@@ -110,6 +110,15 @@ def init_db():
             quantidade  INTEGER NOT NULL,
             preco_unit  REAL NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS avaliacao (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            produto_id  INTEGER NOT NULL REFERENCES produto(id),
+            cliente_id  INTEGER NOT NULL REFERENCES usuario(id),
+            nota        INTEGER NOT NULL,
+            comentario  TEXT,
+            criado_em   TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+        );
     """)
     db.commit()
 
@@ -178,7 +187,23 @@ def produto(pid):
     if not p:
         flash('Produto não encontrado.', 'danger')
         return redirect(url_for('index'))
-    return render_template('produto.html', produto=p)
+    avaliacoes = query(
+        "SELECT a.*, u.nome FROM avaliacao a JOIN usuario u ON u.id = a.cliente_id WHERE a.produto_id=? ORDER BY a.criado_em DESC",
+        (pid,)
+    )
+    return render_template('produto.html', produto=p, avaliacoes=avaliacoes)
+
+@app.route('/produto/<int:pid>/avaliar', methods=['POST'])
+@login_required
+def avaliar_produto(pid):
+    nota = int(request.form.get('nota', 5))
+    comentario = request.form.get('comentario', '').strip()
+    execute(
+        "INSERT INTO avaliacao (produto_id, cliente_id, nota, comentario) VALUES (?, ?, ?, ?)",
+        (pid, session['user_id'], nota, comentario)
+    )
+    flash('Avaliação enviada com sucesso!', 'success')
+    return redirect(url_for('produto', pid=pid))
 
 # ─── Rotas: Auth ──────────────────────────────────────────────────────────────
 
@@ -270,6 +295,15 @@ def update_cart():
     session.modified = True
     return redirect(url_for('carrinho'))
 
+@app.route('/calcular_frete', methods=['POST'])
+def calcular_frete():
+    cep = request.form.get('cep', '').strip()
+    if cep.startswith('0') or cep.startswith('1'):
+        valor = 15.00
+    else:
+        valor = 25.00
+    return jsonify({'cep': cep, 'valor': valor})
+
 # ─── Rotas: Checkout / Pedidos ────────────────────────────────────────────────
 
 @app.route('/checkout', methods=['GET', 'POST'])
@@ -283,6 +317,11 @@ def checkout():
     if request.method == 'POST':
         endereco  = request.form['endereco'].strip()
         pagamento = request.form['pagamento']
+        frete_str = request.form.get('frete_valor', '0')
+        try:
+            frete_valor = float(frete_str)
+        except ValueError:
+            frete_valor = 0.0
         if not endereco:
             flash('Informe o endereço de entrega.', 'danger')
             return redirect(url_for('checkout'))
@@ -297,6 +336,8 @@ def checkout():
                 return redirect(url_for('carrinho'))
             total += p['preco'] * qty
             itens.append((p, qty))
+
+        total += frete_valor
 
         # Criar pedido
         pid = execute(
@@ -433,6 +474,26 @@ def loja_atualizar_status(pid):
     execute("UPDATE pedido SET status=? WHERE id=?", (novo_status, pid))
     flash('Status atualizado!', 'success')
     return redirect(url_for('loja_pedidos'))
+
+@app.route('/loja/estoque', methods=['GET', 'POST'])
+@login_required
+@lojista_required
+def loja_estoque():
+    if request.method == 'POST':
+        for key, value in request.form.items():
+            if key.startswith('estoque_'):
+                pid = key.split('_')[1]
+                novo_estoque = int(value)
+                execute("UPDATE produto SET estoque=? WHERE id=? AND lojista_id=?", 
+                        (novo_estoque, pid, session['user_id']))
+        flash('Estoque atualizado com sucesso!', 'success')
+        return redirect(url_for('loja_estoque'))
+        
+    produtos = query(
+        "SELECT id, nome, estoque FROM produto WHERE lojista_id=? ORDER BY nome ASC",
+        (session['user_id'],)
+    )
+    return render_template('loja_estoque.html', produtos=produtos)
 
 # ─── Run ──────────────────────────────────────────────────────────────────────
 

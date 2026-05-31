@@ -7,10 +7,17 @@
   <form method="post" class="checkout-form">
     <div class="form-section">
       <h3>📦 Endereço de Entrega</h3>
-      <label>Endereço completo (rua, número, bairro, cidade, CEP)
-        <textarea name="endereco" rows="3" required placeholder="Ex.: Rua das Flores, 123 — Jardim Primavera — São Paulo/SP — 01234-567"></textarea>
-      </label>
-    </div>
+        <label>CEP para Frete
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <input type="text" id="cep-checkout" placeholder="00000-000">
+            <button type="button" class="btn-outline" onclick="calcularFreteCheckout()">Calcular</button>
+          </div>
+        </label>
+        <label>Endereço completo (rua, número, bairro, cidade, CEP)
+          <textarea name="endereco" rows="3" required placeholder="Ex.: Rua das Flores, 123 — Jardim Primavera — São Paulo/SP — 01234-567"></textarea>
+        </label>
+        <input type="hidden" name="frete_valor" id="frete_valor_input" value="0">
+      </div>
 
     <div class="form-section">
       <h3>💳 Forma de Pagamento</h3>
@@ -41,11 +48,35 @@
         <span>R$ {{ '%.2f'|format(item.subtotal) }}</span>
       </div>
     {% endfor %}
+    <div class="summary-row">
+      <span>Frete</span>
+      <span id="frete-display">R$ 0.00</span>
+    </div>
     <hr>
     <div class="summary-row total-row">
       <strong>Total</strong>
-      <strong>R$ {{ '%.2f'|format(total) }}</strong>
+      <strong id="total-display">R$ {{ '%.2f'|format(total) }}</strong>
     </div>
   </div>
 </div>
+
+<script>
+let subtotal = {{ total }};
+function calcularFreteCheckout() {
+    let cep = document.getElementById('cep-checkout').value;
+    if (!cep) return;
+    fetch('{{ url_for("calcular_frete") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'cep=' + encodeURIComponent(cep)
+    })
+    .then(r => r.json())
+    .then(data => {
+        let val = data.valor;
+        document.getElementById('frete-display').innerText = 'R$ ' + val.toFixed(2);
+        document.getElementById('frete_valor_input').value = val;
+        document.getElementById('total-display').innerText = 'R$ ' + (subtotal + val).toFixed(2);
+    });
+}
+</script>
 {% endblock %}
